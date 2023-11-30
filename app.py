@@ -1,12 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
+import time
+import shutil
+import os
 
 from run import batch_run_by_fix_context
 
 
 app = Flask(__name__)
 
-CSV_FILE = 'cache_result.demo'  # Assuming the CSV file is named 'cache_result.demo'
+demo = 'cache_result.demo'
+CSV_FILE = f'{demo}.{time.time()}'   # Assuming the CSV file is named 'cache_result.demo'
+print(f'cache file:{CSV_FILE}')
+
+# rm cache files
+files = os.listdir('./')
+for file in files:
+    if file.startswith(f'{demo}.'):
+        os.remove(file)
+shutil.copyfile(demo, CSV_FILE)
 
 df = pd.read_csv(CSV_FILE) # Load the CSV file into a Pandas DataFrame
 
@@ -33,4 +45,7 @@ def update():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=6001)
+    import sys
+
+    listen_port = int(sys.argv[1])
+    app.run(debug=True, host='0.0.0.0', port=listen_port)

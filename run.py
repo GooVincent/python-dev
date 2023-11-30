@@ -59,6 +59,7 @@ def read_csv(csv_file: str) -> List[dict]:
 
 
 def run(prompt, seed) -> str:
+    print(f'prompt:\n[{prompt}], seed={seed}')
     request = {
         'batch_id': "This is testing batch_id:666",
         'prompt': prompt,
@@ -96,7 +97,7 @@ def batch_run_by_fix_context(round: int, input_context: str):
     title = ['id', 'reply', 'seed', 'input_context']
     input_context = input_context.replace('\\r\\n', '\n')
     input_context = input_context.replace('\r\n', '\n')
-
+    input_context = input_context.replace('\\n', '\n')
     tp = concurrent.futures.ThreadPoolExecutor(max_workers=50)
     futures = []
 
