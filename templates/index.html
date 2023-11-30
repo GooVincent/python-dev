@@ -9,7 +9,9 @@
     <form method="post" action="{{ url_for('update') }}">        
         <textarea name="input_context" rows="10" cols="80">{{ input_context }}</textarea><br><br>
         <label for="round">Round:</label>
-        <input type="round" name="round" required>
+        <input type="round" name="round">
+        <label for="seed">Seed:</label>
+        <input type="seed" name="seed">
         <button type="submit">Run</button>
     </form>
 

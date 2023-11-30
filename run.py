@@ -72,7 +72,7 @@ def run(prompt, seed) -> str:
     result = response.json()['results'][0]['text']
     # result = result.replace('\n', '\\n')
     print(f"--{result}")
-    return result
+    return (result, seed)
 
 
 def batch_run_by_specific_file(round: int):
@@ -91,7 +91,7 @@ def batch_run_by_specific_file(round: int):
             print(f'Done conv[{i}] round[{j}]')
 
 
-def batch_run_by_fix_context(round: int, input_context: str):
+def batch_run_by_fix_context(round: int, input_context: str, seed: int=-1):
     import concurrent.futures
 
     title = ['id', 'reply', 'seed', 'input_context']
@@ -101,13 +101,16 @@ def batch_run_by_fix_context(round: int, input_context: str):
     tp = concurrent.futures.ThreadPoolExecutor(max_workers=50)
     futures = []
 
-    for j in range(round):
-        seed = random.randint(1, 2**32-1)
-        # reply = run(input_context, seed)
+    if seed > 0:
         futures.append(tp.submit(run, input_context, seed))
+    else:
+        for j in range(round):
+            seed = random.randint(1, 2**32-1)
+            futures.append(tp.submit(run, input_context, seed))
 
     for i, future in enumerate(concurrent.futures.as_completed(futures)):
-        yield {title[0]:i, title[1]:future.result(), title[2]:seed, title[3]:input_context}
+        reply, seed = future.result()
+        yield {title[0]:i, title[1]:reply, title[2]:seed, title[3]:input_context}
 
 
 if __name__ == '__main__':

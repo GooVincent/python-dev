@@ -32,10 +32,12 @@ def update():
     global df
     # Get the updated values from the form
     input_context = request.form['input_context']
-    round = int(request.form['round'])
+    round = int(request.form['round']) if len(request.form['round']) > 0 else 1
+    seed = int(request.form['seed']) if len(request.form['seed']) > 0 else -1
 
     df = pd.DataFrame(columns=df.columns)
-    for row in batch_run_by_fix_context(round, input_context):
+    answers = batch_run_by_fix_context(round, input_context, seed=seed)
+    for row in answers:
         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
     # Update the DataFrame
